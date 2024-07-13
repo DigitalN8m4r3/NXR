@@ -17,21 +17,44 @@ public partial class FirearmSpawner : Node3D
         {
             _firearm = (Firearm)GetParent();
             _firearm.OnFire += OnFire; 
+            _firearm.TryEject += OnEject; 
         }
     }
 
     private void OnFire() { 
-        Node3D inst = (Node3D)_scene.Instantiate(); 
+        FirearmBullet inst = _scene.Instantiate<FirearmBullet>(); 
         
         _firearm.GetParent().AddChild(inst); 
         inst.GlobalPosition = GlobalPosition; 
 
-        float rand = GD.Randf(); 
-        inst.Rotation = new Vector3(rand, rand, rand); 
+        float randX = GD.Randf(); 
+        float randY = GD.Randf(); 
+        float randZ = GD.Randf(); 
+        
+        inst.Rotation = new Vector3(randX, randY, randZ);
+        inst.UpdateTip(true);
 
         if (Util.NodeIs(inst, typeof(RigidBody3D))) { 
             RigidBody3D body = (RigidBody3D)inst; 
-            GD.Print("force"); 
+            body.ApplyCentralForce(GlobalTransform.Basis.X * 30); 
+        }
+    }
+
+    private void OnEject() {
+        FirearmBullet inst = _scene.Instantiate<FirearmBullet>(); 
+        
+        _firearm.GetParent().AddChild(inst); 
+        inst.GlobalPosition = GlobalPosition; 
+
+        float randX = GD.Randf(); 
+        float randY = GD.Randf(); 
+        float randZ = GD.Randf(); 
+        
+        inst.Rotation = new Vector3(randX, randY, randZ); 
+        inst.UpdateTip(false);
+
+        if (Util.NodeIs(inst, typeof(RigidBody3D))) { 
+            RigidBody3D body = (RigidBody3D)inst; 
             body.ApplyCentralForce(GlobalTransform.Basis.X * 30); 
         }
     }
